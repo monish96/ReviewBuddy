@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prreviewbot
+  labels:
+    app: prreviewbot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prreviewbot
+  template:
+    metadata:
+      labels:
+        app: prreviewbot
+    spec:
+      containers:
+        - name: prreviewbot
+          # Replace with your ACR image
+          image: YOUR_ACR.azurecr.io/prreviewbot:0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8765
+          env:
+            # Optional: configure OpenAI custom endpoint via env (otherwise use Settings UI)
+            # - name: OPENAI_ENDPOINT
+            #   value: "https://genai-nexus.api.corpinter.net/apikey/"
+            # - name: OPENAI_API_KEY
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: prreviewbot-secrets
+            #       key: openai_api_key
+            - name: HOME
+              value: /home/appuser
+          volumeMounts:
+            - name: prreviewbot-data
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8765
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8765
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+      volumes:
+        - name: prreviewbot-data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prreviewbot
+  labels:
+    app: prreviewbot
+spec:
+  type: ClusterIP
+  selector:
+    app: prreviewbot
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8765
+
+

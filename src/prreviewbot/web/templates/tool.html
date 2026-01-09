@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ app_name }} - Tool</title>
+    <link rel="icon" href="/static/icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script defer src="/static/app.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <div class="brand">
+          <div class="brand-text">
+            <div class="brand-title" style="display:flex; align-items:center; gap:10px">
+              <img class="logo" src="/static/icon.svg" alt="{{ app_name }} logo" width="24" height="24" />
+              <span class="title">{{ app_name }}</span>
+            </div>
+            <div class="subtitle">Paste a PR link and get suggestions</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <a class="link" href="/">Home</a>
+          <a class="link" href="/settings">Settings</a>
+        </nav>
+      </header>
+
+      <main class="card">
+        <form id="review-form" class="form">
+          <label class="label">
+            PR link
+            <input class="input" id="pr-link" type="url" placeholder="https://github.com/org/repo/pull/123" required />
+          </label>
+
+          <label class="label">
+            Language
+            <select class="input" id="language">
+              <option value="">Auto-detect</option>
+              <option value="python">Python</option>
+              <option value="typescript">TypeScript</option>
+              <option value="javascript">JavaScript</option>
+              <option value="java">Java</option>
+              <option value="go">Go</option>
+              <option value="rust">Rust</option>
+              <option value="csharp">C#</option>
+              <option value="cpp">C/C++</option>
+              <option value="sql">SQL</option>
+              <option value="general">General</option>
+            </select>
+          </label>
+
+          <div class="grid" style="grid-template-columns: 1fr 1fr;">
+            <label class="label">
+              LLM provider
+              <select class="input" id="llm-provider">
+                <option value="">Use Settings</option>
+                <option value="heuristic">Heuristic</option>
+                <option value="openai">OpenAI</option>
+              </select>
+              <div class="muted">Tip: “Use Settings” respects whatever you configured in Settings.</div>
+            </label>
+            <label class="label">
+              Model / deployment (optional)
+              <input class="input" id="llm-model" placeholder="e.g. gpt-4o-mini or deployment-name" />
+            </label>
+          </div>
+
+          <div class="row">
+            <button class="button" type="submit">Review PR</button>
+            <a class="button secondary" href="/settings">Configure tokens / LLM</a>
+            <button class="button secondary" id="reset" type="button">Reset</button>
+          </div>
+        </form>
+
+        <div id="status" class="status muted"></div>
+        <div id="result" class="result"></div>
+      </main>
+    </div>
+  </body>
+</html>
+
+

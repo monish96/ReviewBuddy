@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ app_name }} - Settings</title>
+    <link rel="icon" href="/static/icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script defer src="/static/settings.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <div class="brand">
+          <div class="brand-text">
+            <div class="brand-title" style="display:flex; align-items:center; gap:10px">
+              <img class="logo" src="/static/icon.svg" alt="{{ app_name }} logo" width="24" height="24" />
+              <span class="title">{{ app_name }} Settings</span>
+            </div>
+            <div class="subtitle">Tokens are stored locally in <code>~/.prreviewbot/config.json</code></div>
+          </div>
+        </div>
+        <nav class="nav">
+          <a class="link" href="/">Home</a>
+          <a class="link" href="/tool">Tool</a>
+        </nav>
+      </header>
+
+      <main class="grid">
+        <section class="card">
+          <h2>Auth tokens</h2>
+          <p class="muted">
+            Add a token per provider + host (domain only). You can paste a full URL; PRreviewBot will extract the host.
+          </p>
+
+          <form id="token-form" class="form">
+            <label class="label">
+              Provider
+              <select class="input" id="provider">
+                <option value="github">GitHub</option>
+                <option value="gitlab">GitLab</option>
+                <option value="bitbucket">Bitbucket Cloud</option>
+                <option value="azure">Azure DevOps</option>
+                <option value="gitea">Gitea</option>
+              </select>
+            </label>
+            <label class="label">
+              Host
+              <input class="input" id="host" placeholder="github.com" required />
+              <div class="muted" id="host-hint"></div>
+            </label>
+            <label class="label">
+              Token
+              <input class="input" id="token" placeholder="paste token here" required />
+              <div class="muted" id="token-hint"></div>
+            </label>
+            <button class="button" type="submit">Save token</button>
+          </form>
+
+          <h3>Saved tokens (masked)</h3>
+          <div id="tokens-list" class="pre"></div>
+        </section>
+
+        <section class="card">
+          <h2>LLM</h2>
+          <p class="muted">If you don’t configure an LLM, PRreviewBot uses a local heuristic reviewer.</p>
+          <form id="llm-form" class="form">
+            <label class="label">
+              Provider
+              <select class="input" id="llm-provider">
+                <option value="heuristic">Heuristic (no setup)</option>
+                <option value="openai">OpenAI</option>
+              </select>
+            </label>
+            <label class="label">
+              Default model (OpenAI)
+              <input class="input" id="default-model" placeholder="gpt-4o-mini" />
+            </label>
+            <label class="label">
+              OpenAI API key
+              <input class="input" id="openai-api-key" placeholder="sk-..." />
+            </label>
+            <div id="openai-endpoint-fields">
+              <label class="label">
+                OpenAI custom endpoint (optional)
+                <input class="input" id="openai-endpoint" placeholder="https://genai-nexus.api.corpinter.net/apikey/" />
+                <div class="muted">If set, PRreviewBot will call this endpoint using your <code>openai_api_key</code>.</div>
+              </label>
+              <label class="label">
+                API version (optional)
+                <input class="input" id="openai-api-version" placeholder="2024-02-15-preview" />
+              </label>
+              <label class="label">
+                Deployment name (optional)
+                <input class="input" id="openai-deployment" placeholder="gpt-4o-mini" />
+                <div class="muted">For AzureOpenAI-compatible gateways, this is typically the <b>deployment</b> name.</div>
+              </label>
+            </div>
+            <button class="button" type="submit">Save LLM settings</button>
+            <button class="button secondary" id="llm-clear" type="button">Clear LLM settings</button>
+          </form>
+
+          <h3>Current (masked)</h3>
+          <pre class="pre" id="llm-view">{{ settings.llm | tojson }}</pre>
+        </section>
+      </main>
+
+      <div class="footer muted">
+        After saving tokens, go back to the <a href="/tool">tool</a> and paste your PR link.
+      </div>
+    </div>
+  </body>
+</html>
+
+
