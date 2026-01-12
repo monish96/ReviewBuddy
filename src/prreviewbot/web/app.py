@@ -100,7 +100,7 @@ def create_app(*, data_dir: Optional[Path] = None) -> FastAPI:
             },
         )
 
-    @app.get("/index.html", response_class=HTMLResponse)
+    @app.get("/pr-review", response_class=HTMLResponse)
     def index_html(request: Request):
         # Gateway compatibility: serve the same page as "/"
         return templates.TemplateResponse(

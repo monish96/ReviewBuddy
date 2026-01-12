@@ -170,8 +170,9 @@ details.file-group summary::-webkit-details-marker { display:none; }
   padding: 12px 12px;
   border-radius: 14px;
   border: 1px solid var(--border);
-  background: rgba(12, 18, 32, 0.92);
-  backdrop-filter: blur(8px);
+  /* Opaque toast (no transparency) */
+  background: #0c1220;
+  backdrop-filter: none;
   box-shadow: 0 10px 40px rgba(0,0,0,0.35);
 }
 .toast .t-title { font-weight: 700; margin-bottom: 4px; }
