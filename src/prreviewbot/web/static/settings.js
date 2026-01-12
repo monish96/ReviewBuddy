@@ -86,7 +86,7 @@ const PROVIDER_PRESETS = {
 };
 
 async function refresh() {
-  const res = await fetch("/api/settings");
+  const res = await fetch("api/settings");
   const data = await res.json();
   renderTokens(data.tokens || {});
   document.getElementById("llm-view").textContent = pretty(data.llm || {});
@@ -145,7 +145,7 @@ function renderTokens(tokens) {
       const provider = btn.getAttribute("data-provider");
       const host = btn.getAttribute("data-host");
       try {
-        await postJson("/api/settings/token/delete", { provider, host });
+        await postJson("api/settings/token/delete", { provider, host });
         toast("ok", "Token removed", `Provider: ${provider}\nHost: ${host}`);
         await refresh();
       } catch (err) {
@@ -200,7 +200,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const provider = document.getElementById("provider").value;
       const hostRaw = normalizeHost(document.getElementById("host").value.trim());
       const token = document.getElementById("token").value.trim();
-      const resp = await postJson("/api/settings/token", { provider, host: hostRaw, token });
+      const resp = await postJson("api/settings/token", { provider, host: hostRaw, token });
       document.getElementById("token").value = "";
       await refresh();
       toast("ok", "Token saved", `Provider: ${provider}\nHost: ${resp.host || hostRaw}`);
@@ -213,7 +213,7 @@ window.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     try {
       const provider = document.getElementById("llm-provider").value;
-      await postJson("/api/settings/llm", {
+      await postJson("api/settings/llm", {
         provider,
         default_model: document.getElementById("default-model").value.trim() || null,
         openai_api_key: document.getElementById("openai-api-key").value.trim() || null,
@@ -231,7 +231,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   llmClear.addEventListener("click", async () => {
     try {
-      await postJson("/api/settings/llm/clear", {});
+      await postJson("api/settings/llm/clear", {});
       await refresh();
       toast("ok", "LLM settings cleared", "Heuristic mode will be used unless you configure an LLM again.");
     } catch (err) {

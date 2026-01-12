@@ -379,7 +379,7 @@ window.addEventListener("DOMContentLoaded", () => {
     result.innerHTML = "";
     persist();
     try {
-      const data = await postJson("/api/review", {
+      const data = await postJson("api/review", {
         pr_link: prLink.value.trim(),
         language: language.value || null,
         llm_provider: llmProvider.value || null,
@@ -401,7 +401,7 @@ window.addEventListener("DOMContentLoaded", () => {
           const end = parseInt(btn.getAttribute("data-end") || "", 10);
           const related = btn.getAttribute("data-related") || null;
           try {
-            const resp = await postJson("/api/pr/comment", {
+            const resp = await postJson("api/pr/comment", {
               pr_link: prLink.value.trim(),
               file_path: file || null,
               severity: sev,

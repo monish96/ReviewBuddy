@@ -4,9 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{ app_name }} - Settings</title>
-    <link rel="icon" href="/static/icon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="/static/styles.css" />
-    <script defer src="/static/settings.js"></script>
+    <link rel="icon" href="{{ request.url_for('static', path='icon.svg') }}" type="image/svg+xml" />
+    <link rel="stylesheet" href="{{ request.url_for('static', path='styles.css') }}" />
+    <script defer src="{{ request.url_for('static', path='settings.js') }}"></script>
   </head>
   <body>
     <div class="container">
@@ -14,15 +14,15 @@
         <div class="brand">
           <div class="brand-text">
             <div class="brand-title" style="display:flex; align-items:center; gap:10px">
-              <img class="logo" src="/static/icon.svg" alt="{{ app_name }} logo" width="24" height="24" />
+              <img class="logo" src="{{ request.url_for('static', path='icon.svg') }}" alt="{{ app_name }} logo" width="24" height="24" />
               <span class="title">{{ app_name }} Settings</span>
             </div>
             <div class="subtitle">Tokens are stored locally in <code>~/.prreviewbot/config.json</code></div>
           </div>
         </div>
         <nav class="nav">
-          <a class="link" href="/">Home</a>
-          <a class="link" href="/tool">Tool</a>
+          <a class="link" href="{{ request.url_for('landing') }}">Home</a>
+          <a class="link" href="{{ request.url_for('tool') }}">Tool</a>
         </nav>
       </header>
 
@@ -106,7 +106,7 @@
       </main>
 
       <div class="footer muted">
-        After saving tokens, go back to the <a href="/tool">tool</a> and paste your PR link.
+        After saving tokens, go back to the <a href="{{ request.url_for('tool') }}">tool</a> and paste your PR link.
       </div>
     </div>
   </body>

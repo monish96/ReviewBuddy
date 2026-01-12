@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -65,7 +66,10 @@ class PostCommentRequest(BaseModel):
 
 
 def create_app(*, data_dir: Optional[Path] = None) -> FastAPI:
-    app = FastAPI(title=app_name(), version="0.1.0")
+    # When deployed behind a reverse proxy under a path prefix (e.g. /pr-review),
+    # set PRREVIEWBOT_ROOT_PATH=/pr-review so url_for() generates correct links.
+    root_path = (os.getenv("PRREVIEWBOT_ROOT_PATH") or "").rstrip("/")
+    app = FastAPI(title=app_name(), version="0.1.0", root_path=root_path)
 
     templates_dir = Path(__file__).parent / "templates"
     static_dir = Path(__file__).parent / "static"
@@ -79,16 +83,35 @@ def create_app(*, data_dir: Optional[Path] = None) -> FastAPI:
         return {"ok": True}
 
     @app.get("/favicon.ico")
-    def favicon():
+    def favicon(request: Request):
         # avoid 404 spam; browsers will accept SVG too
-        return RedirectResponse(url="/static/icon.svg")
+        return RedirectResponse(url=str(request.url_for("static", path="icon.svg")))
 
     @app.get("/", response_class=HTMLResponse)
     def landing(request: Request):
         return templates.TemplateResponse(
             request,
             "landing.html",
-            {"request": request, "tool_path": "/tool", "app_name": app_name(), "app_tagline": app_tagline()},
+            {
+                "request": request,
+                "tool_path": str(request.url_for("tool")),
+                "app_name": app_name(),
+                "app_tagline": app_tagline(),
+            },
+        )
+
+    @app.get("/index.html", response_class=HTMLResponse)
+    def index_html(request: Request):
+        # Gateway compatibility: serve the same page as "/"
+        return templates.TemplateResponse(
+            request,
+            "landing.html",
+            {
+                "request": request,
+                "tool_path": str(request.url_for("tool")),
+                "app_name": app_name(),
+                "app_tagline": app_tagline(),
+            },
         )
 
     @app.get("/tool", response_class=HTMLResponse)
@@ -153,7 +176,7 @@ def create_app(*, data_dir: Optional[Path] = None) -> FastAPI:
         return {"ok": True}
 
     @app.post("/api/review")
-    def review(payload: ReviewRequest):
+    def review(payload: ReviewRequest, request: Request):
         cfg = store.load()
         service = ReviewService.from_config(cfg)
         try:
@@ -192,7 +215,12 @@ def create_app(*, data_dir: Optional[Path] = None) -> FastAPI:
         except AuthRequiredError as e:
             raise HTTPException(
                 status_code=401,
-                detail={"error": str(e), "provider": e.provider, "host": e.host, "settings_url": "/settings"},
+                detail={
+                    "error": str(e),
+                    "provider": e.provider,
+                    "host": e.host,
+                    "settings_url": str(request.url_for("settings_page")),
+                },
             )
         except PRReviewBotError as e:
             raise HTTPException(status_code=400, detail={"error": str(e)})
@@ -200,7 +228,7 @@ def create_app(*, data_dir: Optional[Path] = None) -> FastAPI:
             raise HTTPException(status_code=500, detail={"error": f"Unexpected error: {e}"})
 
     @app.post("/api/pr/comment")
-    def post_comment(payload: PostCommentRequest):
+    def post_comment(payload: PostCommentRequest, request: Request):
         cfg = store.load()
         service = ReviewService.from_config(cfg)
         try:
@@ -219,7 +247,12 @@ def create_app(*, data_dir: Optional[Path] = None) -> FastAPI:
         except AuthRequiredError as e:
             raise HTTPException(
                 status_code=401,
-                detail={"error": str(e), "provider": e.provider, "host": e.host, "settings_url": "/settings"},
+                detail={
+                    "error": str(e),
+                    "provider": e.provider,
+                    "host": e.host,
+                    "settings_url": str(request.url_for("settings_page")),
+                },
             )
         except (PRReviewBotError, ProviderError) as e:
             raise HTTPException(status_code=400, detail={"error": str(e)})

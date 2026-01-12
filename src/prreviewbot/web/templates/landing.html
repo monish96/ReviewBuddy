@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{ app_name }}</title>
-    <link rel="icon" href="/static/icon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="/static/styles.css" />
+    <link rel="icon" href="{{ request.url_for('static', path='icon.svg') }}" type="image/svg+xml" />
+    <link rel="stylesheet" href="{{ request.url_for('static', path='styles.css') }}" />
   </head>
   <body>
     <div class="container">
@@ -13,15 +13,15 @@
         <div class="brand">
           <div class="brand-text">
             <div class="brand-title" style="display:flex; align-items:center; gap:10px">
-              <img class="logo" src="/static/icon.svg" alt="{{ app_name }} logo" width="24" height="24" />
+              <img class="logo" src="{{ request.url_for('static', path='icon.svg') }}" alt="{{ app_name }} logo" width="24" height="24" />
               <span class="title">{{ app_name }}</span>
             </div>
             <div class="subtitle">{{ app_tagline }}</div>
           </div>
         </div>
         <nav class="nav">
-          <a class="link" href="/tool">Tool</a>
-          <a class="link" href="/settings">Settings</a>
+          <a class="link" href="{{ request.url_for('tool') }}">Tool</a>
+          <a class="link" href="{{ request.url_for('settings_page') }}">Settings</a>
         </nav>
       </header>
 
@@ -38,7 +38,7 @@
         </div>
 
         <p class="muted">
-          Tip: If your repo is private, go to <a href="/settings">Settings</a> and add your token (stored locally).
+          Tip: If your repo is private, go to <a href="{{ request.url_for('settings_page') }}">Settings</a> and add your token (stored locally).
         </p>
       </main>
     </div>
